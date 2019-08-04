@@ -70,7 +70,7 @@ def main(now, locations, temp_dfs):
         else:
             temp_dfs[loc] = [df.to_dict(orient='list')]
 
-    with open('root/Gaspy/Data/master_data.json', 'w') as f:
+    with open('~/Gaspy/Data/master_data.json', 'w') as f:
         json.dump(temp_dfs, f, indent=4, sort_keys=True, default=str)
 
 
@@ -80,7 +80,7 @@ if __name__ == '__main__':
     locations = ['Oakville', 'Burlington', 'Hamilton', 'Ancaster', 'Milton', 'Mississauga']
 
     try:
-        with open('root/Gaspy/Data/master_data.json', 'r') as f:
+        with open('~/Gaspy/Data/master_data.json', 'r') as f:
             data_dfs = json.load(f)
         print('Loaded master')
     except:
