@@ -19,59 +19,65 @@ Two steps:
 """
 
 def main(now, locations, temp_dfs):
-    for loc in locations:
-        url = f'https://www.gasbuddy.com/GasPrices/Ontario/{loc}'
-        url_soup = requests.get(url)
+    try:
+        for loc in locations:
+            url = f'https://www.gasbuddy.com/GasPrices/Ontario/{loc}'
+            url_soup = requests.get(url)
 
-        # Prices list
-        soup = BeautifulSoup(url_soup.content, "html.parser")
-        # Find prices
-        prices = soup.text.split('p.a = ')[1].split(';\r')[0].replace('[', '').replace(']', '').split(',"')
-        # Clean and remove 0's
-        prices = [i.replace('"', '') for i in prices if len(i) > 1]
+            # Prices list
+            soup = BeautifulSoup(url_soup.content, "html.parser")
+            # Find prices
+            prices = soup.text.split('p.a = ')[1].split(';\r')[0].replace('[', '').replace(']', '').split(',"')
+            # Clean and remove 0's
+            prices = [i.replace('"', '') for i in prices if len(i) > 1]
 
-        # Stations dataframe
-        r = requests.get(url, headers=header)
-        # Set dataframe
-        df = pd.read_html(r.text)[0]
-        # Clean dataframe
-        df = df[[1, 2, 3]].dropna().rename(columns={1: 'Station', 2: 'City', 3: 'Date'})
+            # Stations dataframe
+            r = requests.get(url, headers=header)
+            # Set dataframe
+            df = pd.read_html(r.text)[0]
+            # Clean dataframe
+            df = df[[1, 2, 3]].dropna().rename(columns={1: 'Station', 2: 'City', 3: 'Date'})
 
-        # Find cities
-        city = df.City.iloc[0]
-        # Skips uninteresting rows
-        df = df[df.index % 2 == 0]
+            # Find cities
+            city = df.City.iloc[0]
+            # Skips uninteresting rows
+            df = df[df.index % 2 == 0]
 
-        # Set values
-        df['Prices'] = prices
-        df['Address'] = df.Station.apply(lambda x: x.split(')  ')[1])
-        df['Address'] = df.Address.apply(lambda x: x.split(city)[0])
-        df['Station'] = df.Station.apply(lambda x: x.split(' (')[0])
-        df['Date'] = df.Date.apply(lambda x: x.split(' ago')[0])
+            # Set values
+            df['Prices'] = prices
+            df['Address'] = df.Station.apply(lambda x: x.split(')  ')[1])
+            df['Address'] = df.Address.apply(lambda x: x.split(city)[0])
+            df['Station'] = df.Station.apply(lambda x: x.split(' (')[0])
+            df['Date'] = df.Date.apply(lambda x: x.split(' ago')[0])
 
-        # Create datetime
-        for i, date in enumerate(df.Date):
-            if date[-1] == 'h':
-                delta = int(date[:-1])
-                date = datetime.now() - timedelta(hours=delta)
-            elif date[-1] == 'm':
-                delta = int(date[:-1])
-                date = datetime.now() - timedelta(minutes=delta)
-            # Reset older dates to now
-            if date == '1d':
-                date = now
+            # Create datetime
+            for i, date in enumerate(df.Date):
+                if date[-1] == 'h':
+                    delta = int(date[:-1])
+                    date = datetime.now() - timedelta(hours=delta)
+                elif date[-1] == 'm':
+                    delta = int(date[:-1])
+                    date = datetime.now() - timedelta(minutes=delta)
+                # Reset older dates to now
+                if date == '1d':
+                    date = now
 
-            df.Date.iloc[i] = date
+                df.Date.iloc[i] = date
 
-        df.reset_index(drop=True, inplace=True)
+            df.reset_index(drop=True, inplace=True)
 
-        if loc in temp_dfs.keys():
-            temp_dfs[loc].append(df.to_dict(orient='list'))
-        else:
-            temp_dfs[loc] = [df.to_dict(orient='list')]
+            if loc in temp_dfs.keys():
+                temp_dfs[loc].append(df.to_dict(orient='list'))
+            else:
+                temp_dfs[loc] = [df.to_dict(orient='list')]
 
-    with open('/home/ubuntu/GasPy/Data/master_data.json', 'w') as f:
-        json.dump(temp_dfs, f, indent=4, sort_keys=True, default=str)
+        with open('/home/ubuntu/GasPy/Data/master_data.json', 'w') as f:
+            json.dump(temp_dfs, f, indent=4, sort_keys=True, default=str)
+    except ValueError as e:
+        print(prices)
+        print(df)
+        print(e)
+
 
 
 if __name__ == '__main__':
