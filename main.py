@@ -66,12 +66,10 @@ def main(now, locations, temp_dfs):
         df.reset_index(drop=True, inplace=True)
 
         if loc in temp_dfs.keys():
-            print('Appending to list')
             temp_dfs[loc].append(df.to_dict(orient='list'))
         else:
             temp_dfs[loc] = [df.to_dict(orient='list')]
 
-    print('Saving to master')
     with open('Data/master_data.json', 'w') as f:
         json.dump(temp_dfs, f, indent=4, sort_keys=True, default=str)
 
