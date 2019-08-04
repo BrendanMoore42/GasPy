@@ -91,6 +91,6 @@ if __name__ == '__main__':
     while True:
         print('Running:', now)
         main(now, locations, data_dfs)
-        wait_time = random.choice(range(14000, 14800))
-        print('Sleeping:', str(timedelta(seconds=wait_time)))
-        time.sleep(wait_time)
+        # wait_time = random.choice(range(14000, 14800))
+        # print('Sleeping:', str(timedelta(seconds=wait_time)))
+        # time.sleep(wait_time)
