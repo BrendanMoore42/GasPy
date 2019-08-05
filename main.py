@@ -1,3 +1,10 @@
+#!/usr/bin/python3
+"""
+author: @brendanmoore42
+date: Aug 1, 2019
+
+Scrapes gas prices and stores in local json file every n hours set by cronjob
+"""
 import json
 import time
 import random
