@@ -19,8 +19,9 @@ Two steps:
 """
 
 def main(now, locations, temp_dfs):
-    try:
-        for loc in locations:
+
+    for loc in locations:
+        try:
             url = f'https://www.gasbuddy.com/GasPrices/Ontario/{loc}'
             url_soup = requests.get(url)
 
@@ -71,12 +72,13 @@ def main(now, locations, temp_dfs):
             else:
                 temp_dfs[loc] = [df.to_dict(orient='list')]
 
-        with open('/home/ubuntu/GasPy/Data/master_data.json', 'w') as f:
-            json.dump(temp_dfs, f, indent=4, sort_keys=True, default=str)
-    except ValueError as e:
-        print(prices)
-        print(df)
-        print(e)
+            with open('/home/ubuntu/GasPy/Data/master_data.json', 'w') as f:
+                json.dump(temp_dfs, f, indent=4, sort_keys=True, default=str)
+
+        except ValueError as e:
+            print(e)
+            print(prices)
+            print(df)
 
 
 
