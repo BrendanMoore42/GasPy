@@ -75,10 +75,8 @@ def main(now, locations, temp_dfs):
             with open('/home/ubuntu/GasPy/Data/master_data.json', 'w') as f:
                 json.dump(temp_dfs, f, indent=4, sort_keys=True, default=str)
 
-        except ValueError as e:
-            print(e)
-            print(prices)
-            print(df)
+        except ValueError:
+            print('Failed', loc)
 
 
 
