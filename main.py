@@ -1,4 +1,4 @@
-#!/usr/bin/env
+#!/usr/bin/python3
 """
 author: @brendanmoore42
 date: Aug 1, 2019
